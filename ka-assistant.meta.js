@@ -13,5 +13,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addStyle
+// @updateURL    https://raw.githubusercontent.com/luftsport/ka-assistant/main/ka-assistant.meta.js
+// @downloadURL  https://raw.githubusercontent.com/luftsport/ka-assistant/main/ka-assistant.user.js
 // ==/UserScript==
 /* globals $ */
