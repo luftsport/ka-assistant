@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-02-04
+// @version      2025-02-04.2
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -223,7 +223,13 @@ const kaPerson = (pathname) => {
   const container = document.getElementById(containerId);
   const viewModel = unsafeWindow.ko.dataFor(container);
 
-  const menu = `<div style="margin-top: 15px; padding-left: 15px;"><a class="btn btn-default" href="https://sa.nif.no/Person/Index/About/${personId}">Åpne i SA</a> <a class="btn btn-default" href="https://nlfadmin.no/member/${personId}">Åpne i Sentralen</a> <a class="btn btn-default" href="https://ka.nif.no/SendInvoice?ids=${personId}">Generer faktura</a><div id="kaa-alerts" style="display: inline-block; padding-left: 10px;"></div></div>`;
+  const email = document.querySelector("#PrimaryEmail")?.value;
+
+  const menu = `<div style="margin-top: 15px; padding-left: 15px;"><a class="btn btn-default" href="https://sa.nif.no/Person/Index/About/${personId}">Åpne i SA</a> ${
+    !!email
+      ? `<a class="btn btn-default" href="https://idrettskurs.nif.no/search/simplesearch?email=${email}">Søk i IKu</a>`
+      : ""
+  } <a class="btn btn-default" href="https://nlfadmin.no/member/${personId}">Åpne i Sentralen</a> <a class="btn btn-default" href="https://ka.nif.no/SendInvoice?ids=${personId}">Generer faktura</a><div id="kaa-alerts" style="display: inline-block; padding-left: 10px;"></div></div>`;
 
   container.children[0].insertAdjacentHTML("afterbegin", menu);
 
