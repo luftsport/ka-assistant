@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-01-27
+// @version      2025-02-04
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
+// @match        https://idrettskurs.nif.no/search/simplesearch*
 // @match        https://idrettskurs.nif.no/organisations/organisation/*
 // @icon         https://nlf.no/contentassets/0dd488716d13429cb8caeb256ee2c2ec/favicon.ico
 // @grant        unsafeWindow
@@ -13,8 +14,6 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/luftsport/ka-assistant/main/ka-assistant.meta.js
-// @downloadURL  https://raw.githubusercontent.com/luftsport/ka-assistant/main/ka-assistant.user.js
 // ==/UserScript==
 /* globals $ */
 
@@ -775,6 +774,28 @@ const ikOrgPage = () => {
   });
 };
 
+/* Search */
+const ikSearchPage = () => {
+  const query = window.location.search.split("&");
+
+  if (query.length === 0 || query.at(0)?.length === 0) {
+    return;
+  }
+
+  console.log("Found query parameters, injecting");
+
+  for (const queryPart of query) {
+    const [param, value] = queryPart.split("=");
+    if (param.replace("?", "") === "email") {
+      document.querySelector("#email").value = value;
+    }
+  }
+
+  console.log("Triggering search");
+
+  document.querySelector("#btn_search").click();
+};
+
 /*
 *******************************************************************************************
 
@@ -797,6 +818,10 @@ const ikOrgPage = () => {
 
       if (pathname.startsWith("/organisations/organisation/")) {
         ikOrgPage();
+      }
+
+      if (pathname.startsWith("/search/simplesearch")) {
+        ikSearchPage();
       }
       break;
     case "ka.nif.no":
