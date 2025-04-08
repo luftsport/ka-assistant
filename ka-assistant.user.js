@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-04-07
+// @version      2025-04-08
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -656,9 +656,11 @@ const kaMessages = () => {
       .insertAdjacentHTML(
         "beforeend",
         `<div class="row"><div class="col-xs-12" style="margin-top: 5px;">
-        <a id="kaa-invoice-link" class="btn btn-block btn-primary btn-lg" href="https://ka.nif.no/SendInvoice?ids=${invoiceAll.join(
-          ","
-        )}">Generer faktura til tidligere behandlede</button>
+        <a id="kaa-invoice-link" class="btn btn-block btn-primary btn-lg" href="https://ka.nif.no/SendInvoice?ids=${invoiceAll
+          .filter((value, index, self) => {
+            return self.indexOf(value) === index;
+          })
+          .join(",")}">Generer faktura til tidligere behandlede</button>
     </div></div>`
       );
   }
