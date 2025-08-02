@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-04-08
+// @version      2025-08-02
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -505,6 +505,50 @@ const kaPersonReskontro = () => {
   }
 };
 
+/* Fakturasøk */
+const kaInvoice = () => {
+  const searchResultsElement = document.getElementById("InvoiceGrid_container");
+
+  const observer = new MutationObserver((mutationList, observer) => {
+    const viewModel = unsafeWindow.nif.invoiceViewModel;
+    const results = viewModel.SearchResults();
+
+    if (!results || results.length === 0) {
+      return;
+    }
+
+    for (const invoice of results) {
+      const personId = invoice.RecipientIds()[0];
+      const invoiceKid = invoice.kid();
+
+      const row = Array.from(
+        document.querySelectorAll('span[data-bind="text: kid"]')
+      ).find((el) => el.textContent.trim() === invoiceKid).parentElement
+        .parentElement;
+
+      const buttonColumn = row.lastElementChild;
+      buttonColumn.style.width = "200px";
+
+      const elementId = `openRk${invoiceKid}`;
+
+      if (!document.getElementById(elementId)) {
+        buttonColumn.insertAdjacentHTML(
+          "beforeend",
+          `<a title="Åpen reskontro" id="${elementId}" class="btn btn-primary btn-rounded" href="https://ka.nif.no/PersonInvoice/Index/${personId}" target="_blank">RK</a>`
+        );
+      }
+    }
+
+    //observer.disconnect(); (should probably do this on page change)
+  });
+
+  observer.observe(searchResultsElement, {
+    attributes: true,
+    childList: true,
+    subtree: true,
+  });
+};
+
 /* Generer faktura */
 const kaSendInvoice = () => {
   const viewModel = unsafeWindow.nif.sendInvoiceViewModel;
@@ -849,6 +893,9 @@ const ikSearchPage = () => {
       }
 
       switch (pathname) {
+        case "/Invoice":
+          kaInvoice();
+          break;
         case "/SendInvoice":
           kaSendInvoice();
           break;
