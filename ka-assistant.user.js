@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-08-02
+// @version      2025-10-08
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -558,10 +558,10 @@ const kaSendInvoice = () => {
   viewModel.selectedProductId(-1);
   viewModel.addFee(-1);
   setTimeout(() => {
-    console.log("Removing all 2024 fees");
+    console.log("Removing all 2026 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2024"))
+      .filter((product) => product.Name().toLowerCase().includes("2026"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
     unsafeWindow.scrollTo(0, document.body.scrollHeight);
   }, 1000);
@@ -582,12 +582,12 @@ const kaSendInvoice = () => {
 
   const button2 = document.createElement("button");
   button2.className = "btn btn-default";
-  button2.innerText = "Fjern alt for 2024";
+  button2.innerText = "Fjern alt for 2026";
   button2.onclick = () => {
-    console.log("Removing all 2024 fees");
+    console.log("Removing all 2026 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2024"))
+      .filter((product) => product.Name().toLowerCase().includes("2026"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
   };
   insertBefore(button2, document.getElementById("invoiceTextLabel"));
