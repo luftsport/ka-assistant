@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-10-08
+// @version      2025-11-03
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -318,14 +318,31 @@ const kaPerson = (pathname) => {
           (club) => club.BranchNames.replace("-", "").trim() === "Modellfly"
         );
 
-        if (modelClubs.length > 0) {
-          extractViewModelFromUrl(
-            `https://ka.nif.no/PersonProduct/Index/${personId}`,
-            "PersonProductViewModel",
-            (products) => {
-              const orgs = products.Categories.filter(
-                (c) => c.CategoryName === "Unntak"
-              ).at(0).Orgs;
+        extractViewModelFromUrl(
+          `https://ka.nif.no/PersonProduct/Index/${personId}`,
+          "PersonProductViewModel",
+          (products) => {
+            const orgs = products.Categories.filter(
+              (c) => c.CategoryName === "Unntak"
+            ).at(0).Orgs;
+
+            // Check for Familiemedlem
+            const checked = clubs.map((club) => ({
+              club: club.Name,
+              selected: orgs
+                .filter((o) => o.ClubOrgId === club.Id)
+                .at(0)
+                .Details.filter((o) => o.Name === "Familie")
+                .at(0).Selected,
+            }));
+
+            if (checked.some((c) => c.selected)) {
+              console.log(checked);
+              appendKaaAlert("danger", "Har familiemedlemskap");
+            }
+
+            // Check for Modellmedlem
+            if (modelClubs.length > 0) {
               const checked = clubs.map((club) => ({
                 club: club.Name,
                 selected: orgs
@@ -353,15 +370,15 @@ const kaPerson = (pathname) => {
               } else {
                 appendKaaAlert("success", "Modellmedlem OK");
               }
-            },
-            () => {
-              console.error("Failed to get products");
-            },
-            () => {
-              console.error("Timeout while trying to fetch products");
             }
-          );
-        }
+          },
+          () => {
+            console.error("Failed to get products");
+          },
+          () => {
+            console.error("Timeout while trying to fetch products");
+          }
+        );
       },
       () => {
         console.error("Failed to get activities");
@@ -551,6 +568,15 @@ const kaInvoice = () => {
 
 /* Generer faktura */
 const kaSendInvoice = () => {
+  document
+    .getElementById("toEmailLabel")
+    .parentNode.insertAdjacentHTML(
+      "afterend",
+      `<div class="alert alert-danger" style="display: inline-block; padding: 5px; margin-left: 5px; margin-bottom: 0;">VI ER IKKE KLARE FOR FAKTURERING AV KONTINGENTPERIODE 2026</div>`
+    );
+
+  [...document.getElementsByClassName("btn-primary")].at(-1).remove();
+
   const viewModel = unsafeWindow.nif.sendInvoiceViewModel;
   const toAddress = viewModel.InvoiceRequest.ToEmailAddress();
   viewModel.InvoiceRequest.ToEmailAddress(extractNlfEmail(toAddress));
@@ -558,10 +584,10 @@ const kaSendInvoice = () => {
   viewModel.selectedProductId(-1);
   viewModel.addFee(-1);
   setTimeout(() => {
-    console.log("Removing all 2026 fees");
+    console.log("Removing all 2025 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2026"))
+      .filter((product) => product.Name().toLowerCase().includes("2025"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
     unsafeWindow.scrollTo(0, document.body.scrollHeight);
   }, 1000);
@@ -582,12 +608,12 @@ const kaSendInvoice = () => {
 
   const button2 = document.createElement("button");
   button2.className = "btn btn-default";
-  button2.innerText = "Fjern alt for 2026";
+  button2.innerText = "Fjern alt for 2025";
   button2.onclick = () => {
-    console.log("Removing all 2026 fees");
+    console.log("Removing all 2025 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2026"))
+      .filter((product) => product.Name().toLowerCase().includes("2025"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
   };
   insertBefore(button2, document.getElementById("invoiceTextLabel"));

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-10-08
+// @version      2025-11-03
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
