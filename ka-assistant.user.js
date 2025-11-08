@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-11-03
+// @version      2025-11-08
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -568,15 +568,6 @@ const kaInvoice = () => {
 
 /* Generer faktura */
 const kaSendInvoice = () => {
-  document
-    .getElementById("toEmailLabel")
-    .parentNode.insertAdjacentHTML(
-      "afterend",
-      `<div class="alert alert-danger" style="display: inline-block; padding: 5px; margin-left: 5px; margin-bottom: 0;">VI ER IKKE KLARE FOR FAKTURERING AV KONTINGENTPERIODE 2026</div>`
-    );
-
-  [...document.getElementsByClassName("btn-primary")].at(-1).remove();
-
   const viewModel = unsafeWindow.nif.sendInvoiceViewModel;
   const toAddress = viewModel.InvoiceRequest.ToEmailAddress();
   viewModel.InvoiceRequest.ToEmailAddress(extractNlfEmail(toAddress));
@@ -892,8 +883,7 @@ const ikSearchPage = () => {
 
   console.log("Starting KA-Assistant V. " + GM_info.script.version);
   const pathname = window.location.pathname;
-  const domain = document.domain;
-  const href = window.location.href;
+  const domain = window.location.hostname;
 
   switch (domain) {
     case "idrettskurs.nif.no":
