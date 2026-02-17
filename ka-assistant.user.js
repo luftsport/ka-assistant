@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2025-11-08
+// @version      2026-02-17
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -411,6 +411,17 @@ const kaPersonReskontro = () => {
         };
         e.append(button);
 
+        const button2 = document.createElement("button");
+        button2.className = "btn btn-default";
+        button2.style = "margin-top: 5px;";
+        button2.innerText = "Fakturasøk";
+        button2.onclick = () => {
+          window.open(
+            `https://ka.nif.no/Invoice?triggerSearch=${invoice.Kid()}`
+          );
+        };
+        e.append(button2);
+
         [...e.parentElement.getElementsByTagName("td")]
           .at(5)
           .insertAdjacentHTML(
@@ -525,6 +536,15 @@ const kaPersonReskontro = () => {
 /* Fakturasøk */
 const kaInvoice = () => {
   const searchResultsElement = document.getElementById("InvoiceGrid_container");
+
+  if (window.location.search.includes("triggerSearch=")) {
+    const mainContainer = document.getElementById("invoiceviewmodel_container");
+    const invoice = window.location.search.split("=").at(1).trim();
+    const viewModel = ko.dataFor(mainContainer);
+    viewModel.SearchCriteria.InvoiceFrom("01.01.1970");
+    viewModel.SearchCriteria.Freetext(invoice);
+    viewModel.searchAndResetSelected();
+  }
 
   const observer = new MutationObserver((mutationList, observer) => {
     const viewModel = unsafeWindow.nif.invoiceViewModel;
