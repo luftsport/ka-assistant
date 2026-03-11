@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2026-03-11
+// @version      2026-03-11-2
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -112,14 +112,25 @@ const extractViewModelFromUrl = (
     crossDomain: true,
     onload: function (data) {
       try {
-        const json = JSON.parse(
-          data.responseText
-            .split(`Nif.${viewModelName}.create(`)
-            .at(1)
-            .split(");")
-            .at(0)
-        );
-        onload(json);
+        if (viewModelName === "PersonDetailViewModel") {
+          const json = JSON.parse(
+            `{${data.responseText
+              .split(`var baseModel = {`)
+              .at(1)
+              .split("};")
+              .at(0)}}`
+          );
+          onload(json);
+        } else {
+          const json = JSON.parse(
+            data.responseText
+              .split(`Nif.${viewModelName}.create(`)
+              .at(1)
+              .split(");")
+              .at(0)
+          );
+          onload(json);
+        }
       } catch (e) {
         console.error(
           e,
@@ -170,6 +181,27 @@ const extractNlfEmail = (emails) => {
 
   return (
     emailList.filter((email) => email.includes("@nlf.no")).at(0) ?? emailList[0]
+  );
+};
+
+const ageToMemberCategory = (age) => {
+  if (age < 13) return "Barn";
+  if (age < 20) return "Ungdom";
+  if (age < 26) return "Junior";
+  if (age < 67) return "Seinor";
+  return "Pensjonist";
+};
+
+const injectAgeBox = (yearAge) => {
+  const infoContainer = [...document.getElementsByClassName("tab-content")].at(
+    0
+  );
+  infoContainer.insertAdjacentHTML(
+    "afterbegin",
+    `<div class="callout callout-info">
+    Personens alder ved utgangen av året: <b>${yearAge} år</b> (alderskategori <b>${ageToMemberCategory(
+      yearAge
+    )}</b>)</div>`
   );
 };
 
@@ -243,8 +275,9 @@ const kaPerson = (pathname) => {
       new Date().getFullYear() -
       parseInt(
         viewModel.EditPersonViewModel.BirthDate().split(".").at(2) ?? "1970"
-      ) +
-      1;
+      );
+
+    injectAgeBox(yearAge);
 
     extractViewModelFromUrl(
       `https://ka.nif.no/PersonCompetence/Index/${personId}`,
@@ -385,6 +418,26 @@ const kaPerson = (pathname) => {
       },
       () => {
         console.error("Timeout while trying to fetch activities");
+      }
+    );
+  }
+
+  if (page === "PersonProduct") {
+    extractViewModelFromUrl(
+      `https://ka.nif.no/PersonDetail/Index/${personId}`,
+      "PersonDetailViewModel",
+      (person) => {
+        const yearAge =
+          new Date().getFullYear() -
+          new Date(person.EditPersonViewModel.BirthDate).getFullYear();
+
+        injectAgeBox(yearAge);
+      },
+      () => {
+        console.error("Failed to get competences");
+      },
+      () => {
+        console.error("Timeout while trying to fetch competences");
       }
     );
   }
