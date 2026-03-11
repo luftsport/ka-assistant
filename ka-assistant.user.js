@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2026-02-17
+// @version      2026-03-11
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -718,7 +718,10 @@ const kaMessages = () => {
           ...unsafeWindow.nif.memberMessagesMembershipApplicationsViewModel.Items(),
         ]
           .filter((member) => member.isChecked())
-          .map((member) => member.PersonId());
+          .map((member) => member.PersonId())
+          .filter((value, index, self) => {
+            return self.indexOf(value) === index;
+          });
         GM_setValue("KAA-Messages-NewMembers", invoiceAllApproved);
         console.log(`Membership approved for: ${invoiceAllApproved}`);
         document.getElementById(
