@@ -640,6 +640,22 @@ const kaSendInvoice = () => {
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
   };
   insertBefore(button3, document.getElementById("invoiceTextLabel"));
+
+  const button4 = document.createElement("button");
+  button4.className = "btn btn-default";
+  button4.innerText = "Fjern seksjonsavgift for æresmedlemmer";
+  button4.onclick = () => {
+    console.log("Removing all section fees for honor members");
+    viewModel
+      .Products()
+      .filter(
+        (product) =>
+          product.Name().toLowerCase().includes("seksjonskontingent") &&
+          product.Name().toLowerCase().includes("æresmedlem ")
+      )
+      .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
+  };
+  insertBefore(button4, document.getElementById("invoiceTextLabel"));
 };
 
 /* Krediter faktura */
