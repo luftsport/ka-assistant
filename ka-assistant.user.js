@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2026-03-11-2
+// @version      2026-03-17
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -188,7 +188,7 @@ const ageToMemberCategory = (age) => {
   if (age < 13) return "Barn";
   if (age < 20) return "Ungdom";
   if (age < 26) return "Junior";
-  if (age < 67) return "Seinor";
+  if (age < 67) return "Senior";
   return "Pensjonist";
 };
 
