@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KA-Assistant
 // @namespace    https://nlf.no/
-// @version      2026-03-17
+// @version      2026-10-09
 // @description  Make KA a bit nicer
 // @author       Thomas Fredriksen
 // @match        https://ka.nif.no/*
@@ -648,10 +648,10 @@ const kaSendInvoice = () => {
   viewModel.selectedProductId(-1);
   viewModel.addFee(-1);
   setTimeout(() => {
-    console.log("Removing all 2025 fees");
+    console.log("Removing all 2027 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2025"))
+      .filter((product) => product.Name().toLowerCase().includes("2027"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
     unsafeWindow.scrollTo(0, document.body.scrollHeight);
   }, 1000);
@@ -670,14 +670,26 @@ const kaSendInvoice = () => {
   };
   insertBefore(button, document.getElementById("invoiceTextLabel"));
 
-  const button2 = document.createElement("button");
-  button2.className = "btn btn-default";
-  button2.innerText = "Fjern alt for 2025";
-  button2.onclick = () => {
-    console.log("Removing all 2025 fees");
+  const button5 = document.createElement("button");
+  button5.className = "btn btn-default";
+  button5.innerText = "Fjern alt for 2026";
+  button5.onclick = () => {
+    console.log("Removing all 2026 fees");
     viewModel
       .Products()
-      .filter((product) => product.Name().toLowerCase().includes("2025"))
+      .filter((product) => product.Name().toLowerCase().includes("2026"))
+      .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
+  };
+  insertBefore(button5, document.getElementById("invoiceTextLabel"));
+
+  const button2 = document.createElement("button");
+  button2.className = "btn btn-default";
+  button2.innerText = "Fjern alt for 2027";
+  button2.onclick = () => {
+    console.log("Removing all 2027 fees");
+    viewModel
+      .Products()
+      .filter((product) => product.Name().toLowerCase().includes("2027"))
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
   };
   insertBefore(button2, document.getElementById("invoiceTextLabel"));
@@ -709,6 +721,23 @@ const kaSendInvoice = () => {
       .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
   };
   insertBefore(button4, document.getElementById("invoiceTextLabel"));
+
+  const button6 = document.createElement("button");
+  button6.className = "btn btn-default";
+  button6.innerText = "Fjern alt utenom reiseforsikring";
+  button6.onclick = () => {
+    console.log("Removing all but travel insurance");
+    viewModel
+      .Products()
+      .filter(
+        (product) =>
+          !product.Name().toLowerCase().includes("reiseforsikring") ||
+          !product.Name().toLowerCase().includes("2026") ||
+          !product.Name().toLowerCase().includes("2.")
+      )
+      .forEach((product) => viewModel.removeFee(product.OrgId(), product.Id()));
+  };
+  insertBefore(button6, document.getElementById("invoiceTextLabel"));
 };
 
 /* Krediter faktura */
